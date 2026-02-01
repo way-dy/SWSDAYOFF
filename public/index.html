@@ -29,6 +29,14 @@
         
         /* 커스텀 스타일 */
         .glass-effect { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); }
+        
+        /* 메뉴 줄바꿈 방지 및 스타일 */
+        .nav-item {
+            white-space: nowrap; 
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
         .nav-link.active { background-color: #FFF1F2 !important; color: #D80027 !important; font-weight: 700; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         
         /* FullCalendar Customization for SWS Brand */
@@ -43,6 +51,9 @@
         .badge-half { background-color: #E0E7FF; color: #3730A3; } /* 반차 Indigo */
         .badge-quarter { background-color: #F3E8FF; color: #6B21A8; } /* 반반차 Purple */
         .badge-comp { background-color: #DCFCE7; color: #166534; } /* 대체휴무 Green */
+        
+        /* 유틸리티 */
+        .whitespace-nowrap { white-space: nowrap; }
     </style>
 </head>
 <body class="antialiased selection:bg-[#D80027] selection:text-white">
@@ -232,6 +243,32 @@
                             <button class="btn btn-outline-secondary w-full font-bold text-sm" onclick="syncUsersFromSheet()">
                                 <i class="bi bi-cloud-arrow-down-fill me-1"></i> 데이터 동기화 실행
                             </button>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100">
+                        <h5 class="font-bold text-slate-800 mb-4 text-sm flex items-center gap-2">
+                            <i class="bi bi-person-lines-fill text-slate-500"></i> 결재선(Approver) 설정
+                        </h5>
+                        <div class="flex gap-2 mb-4">
+                            <input type="text" id="admin-user-search" class="form-control text-sm" placeholder="직원 이름 검색...">
+                            <button class="btn btn-dark text-sm font-bold whitespace-nowrap" onclick="searchUserForApprover()">검색</button>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="table table-hover text-sm align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>이름</th>
+                                        <th>이메일</th>
+                                        <th>현재 결재자</th>
+                                        <th>설정</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-user-list-body">
+                                    <tr><td colspan="4" class="text-center text-slate-400 py-4">검색 결과가 여기에 표시됩니다.</td></tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -611,6 +648,64 @@ const firebaseConfig = {
         function saveAdminSettings() {
             // Firestore 'settings' 컬렉션에 저장
             alert('설정이 저장되었습니다.');
+        }
+
+        // --- [Admin] 결재선 관리 ---
+        async function searchUserForApprover() {
+            const keyword = document.getElementById('admin-user-search').value.trim();
+            if(!keyword) return alert("검색어를 입력하세요.");
+
+            const tbody = document.getElementById('admin-user-list-body');
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center"><div class="spinner-border spinner-border-sm"></div></td></tr>';
+
+            try {
+                // Firestore에서 전체 유저 가져와서 필터링 (간이 구현)
+                // 실제로는 Firestore 쿼리를 쓰는게 좋지만, 'name' 필드는 like 검색이 안되므로 전체 로드 후 필터
+                const snapshot = await db.collection('users').get();
+                let html = '';
+                
+                snapshot.forEach(doc => {
+                    const u = doc.data();
+                    if (u.name.includes(keyword) || u.email.includes(keyword)) {
+                        html += `
+                            <tr>
+                                <td class="font-bold">${u.name}</td>
+                                <td class="text-slate-500 text-xs">${u.email}</td>
+                                <td>
+                                    <input type="email" id="appr-${doc.id}" class="form-control form-control-sm" 
+                                        value="${u.approver1 || ''}" placeholder="결재자 이메일 입력">
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary font-bold text-xs" 
+                                        onclick="updateApprover('${doc.id}')">저장</button>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                });
+
+                if(html === '') html = '<tr><td colspan="4" class="text-center py-4">검색 결과가 없습니다.</td></tr>';
+                tbody.innerHTML = html;
+
+            } catch(e) {
+                console.error(e);
+                tbody.innerHTML = '<tr><td colspan="4" class="text-danger text-center">오류 발생</td></tr>';
+            }
+        }
+
+        async function updateApprover(targetEmail) {
+            const newApprover = document.getElementById(`appr-${targetEmail}`).value.trim();
+            if(!newApprover) return alert("결재자 이메일을 입력하세요.");
+            if(!newApprover.includes('@')) return alert("올바른 이메일 형식이 아닙니다.");
+
+            try {
+                await db.collection('users').doc(targetEmail).update({
+                    approver1: newApprover
+                });
+                alert("결재선이 저장되었습니다.");
+            } catch(e) {
+                alert("저장 실패: " + e.message);
+            }
         }
 
     </script>
