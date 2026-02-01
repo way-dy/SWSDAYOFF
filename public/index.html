@@ -424,15 +424,29 @@ const firebaseConfig = {
             loading.classList.add('hidden');
         });
 
-        // --- 4. Page Navigation ---
+        // --- 4. Page Navigation (수정됨: 초기 로딩 에러 방지) ---
         window.showPage = (pageId) => {
+            // 1. 모든 페이지 숨김
             document.querySelectorAll('main > div > div[id^="page-"]').forEach(el => el.classList.add('d-none'));
-            document.getElementById(pageId).classList.remove('d-none');
             
-            // Nav Active State
+            // 2. 해당 페이지 표시
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) targetPage.classList.remove('d-none');
+            
+            // 3. 네비게이션 버튼 활성화 (에러 수정 부분)
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            
+            // (1) 클릭해서 들어온 경우 (event가 존재)
+            if (window.event && window.event.currentTarget && window.event.currentTarget.classList) {
+                window.event.currentTarget.classList.add('active');
+            } 
+            // (2) 자동 로그인으로 들어온 경우 (event 없음 -> 수동으로 첫 번째 메뉴 활성화)
+            else if (pageId === 'page-my-leave') {
+                const myLeaveBtn = document.querySelector('button[onclick*="page-my-leave"]');
+                if(myLeaveBtn) myLeaveBtn.classList.add('active');
+            }
 
+            // 추가 로직 실행
             if(pageId === 'page-team-calendar') initCalendar();
             if(pageId === 'page-approval') loadApprovalList();
         };
