@@ -16,21 +16,18 @@
 
     <style>
         :root {
-            --brand-color: #D80027; /* Swiss Red */
+            --brand-color: #D80027;
             --brand-bg-light: #FFF1F2;
             --brand-hover: #B91C1C;
         }
 
         body { font-family: 'Pretendard', sans-serif; background-color: #F8F9FA; color: #334155; }
         
-        /* 스크롤바 */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
         
-        /* 커스텀 스타일 */
         .glass-effect { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); }
         
-        /* 메뉴 줄바꿈 방지 및 스타일 */
         .nav-item {
             white-space: nowrap; 
             overflow: hidden;
@@ -39,20 +36,17 @@
         
         .nav-link.active { background-color: #FFF1F2 !important; color: #D80027 !important; font-weight: 700; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         
-        /* FullCalendar Customization for SWS Brand */
         .fc-event { border: none; border-radius: 6px; padding: 2px 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
         .fc-day-today { background-color: #FFF1F2 !important; }
         .fc-toolbar-title { font-size: 1.25rem !important; font-weight: 800 !important; color: #334155; }
         .fc-button-primary { background-color: #334155 !important; border: none !important; }
         .fc-button-primary:hover { background-color: #D80027 !important; }
 
-        /* 상태 배지 */
-        .badge-annual { background-color: #DBEAFE; color: #1E40AF; } /* 연차 Blue */
-        .badge-half { background-color: #E0E7FF; color: #3730A3; } /* 반차 Indigo */
-        .badge-quarter { background-color: #F3E8FF; color: #6B21A8; } /* 반반차 Purple */
-        .badge-comp { background-color: #DCFCE7; color: #166534; } /* 대체휴무 Green */
+        .badge-annual { background-color: #DBEAFE; color: #1E40AF; }
+        .badge-half { background-color: #E0E7FF; color: #3730A3; }
+        .badge-quarter { background-color: #F3E8FF; color: #6B21A8; }
+        .badge-comp { background-color: #DCFCE7; color: #166534; }
         
-        /* 유틸리티 */
         .whitespace-nowrap { white-space: nowrap; }
     </style>
 </head>
@@ -179,10 +173,10 @@
                     <div class="bg-white rounded-[1.5rem] shadow-sm border border-slate-100 overflow-hidden">
                         <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                             <h5 class="font-bold text-slate-800 text-sm flex items-center gap-2"><i class="bi bi-list-check"></i> 최근 신청 이력</h5>
-                            <span class="text-xs text-slate-400 font-medium">* 클릭하여 상세 조회</span>
+                            <span class="text-xs text-slate-400 font-medium">* 최근 10건만 표시</span>
                         </div>
                         <div class="list-group list-group-flush" id="my-leave-list">
-                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -211,7 +205,7 @@
                         <span class="bg-[#D80027] text-white rounded-lg w-8 h-8 flex items-center justify-center text-sm"><i class="bi bi-stamp"></i></span> 결재 대기 문서
                     </h3>
                     <div class="bg-white rounded-[1.5rem] shadow-sm border border-slate-100" id="approval-list-container">
-                        </div>
+                    </div>
                 </div>
 
                 <div id="page-admin" class="d-none">
@@ -219,56 +213,41 @@
                         <span class="bg-slate-800 text-white rounded-lg w-8 h-8 flex items-center justify-center text-sm"><i class="bi bi-gear-fill"></i></span> 시스템 관리
                     </h3>
                     
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 gap-6">
                         <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100">
-                            <h5 class="font-bold text-slate-800 mb-4 text-sm">연차/대체휴무 소멸 설정</h5>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="text-xs font-bold text-slate-500 block mb-1">정기 연차 만료일 (매년)</label>
-                                    <input type="month" class="form-control" id="admin-annual-expiry" value="2027-02">
-                                    <p class="text-[10px] text-slate-400 mt-1">해당 월 말일까지 사용 가능</p>
-                                </div>
-                                <div>
-                                    <label class="text-xs font-bold text-slate-500 block mb-1">대체휴무 유효기간 (개월)</label>
-                                    <input type="number" class="form-control" id="admin-comp-expiry-months" value="2">
-                                    <p class="text-[10px] text-slate-400 mt-1">발생일(승인일)로부터 자동 계산</p>
-                                </div>
-                                <button class="btn btn-sm bg-[#D80027] text-white w-full font-bold" onclick="saveAdminSettings()">설정 저장</button>
+                            <h5 class="font-bold text-slate-800 mb-4 text-sm flex items-center gap-2">
+                                <i class="bi bi-person-lines-fill text-slate-500"></i> 결재선(Approver) 설정
+                            </h5>
+                            <p class="text-xs text-slate-500 mb-4">직원별로 1차(팀장), 2차(대표/임원) 결재자를 설정할 수 있습니다.</p>
+                            
+                            <div class="flex gap-2 mb-4">
+                                <input type="text" id="admin-user-search" class="form-control text-sm" placeholder="직원 이름 검색...">
+                                <button class="btn btn-dark text-sm font-bold whitespace-nowrap" onclick="searchUserForApprover()">검색</button>
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table class="table table-hover text-sm align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>이름</th>
+                                            <th>1차 결재자 (팀장)</th>
+                                            <th>2차 결재자 (임원/대표)</th>
+                                            <th>설정 저장</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-user-list-body">
+                                        <tr><td colspan="4" class="text-center text-slate-400 py-4">직원 이름을 검색하세요.</td></tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
-                        <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100">
-                            <h5 class="font-bold text-slate-800 mb-4 text-sm">인사 데이터 동기화 (EM Sheet)</h5>
-                            <p class="text-xs text-slate-500 mb-4">Google Sheet의 'em' 시트 데이터를 불러와 사용자 정보를 업데이트합니다.</p>
-                            <button class="btn btn-outline-secondary w-full font-bold text-sm" onclick="syncUsersFromSheet()">
-                                <i class="bi bi-cloud-arrow-down-fill me-1"></i> 데이터 동기화 실행
+                         <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100">
+                            <h5 class="font-bold text-slate-800 mb-4 text-sm">인사 데이터 동기화</h5>
+                             <p class="text-xs text-slate-500 mb-4">Google Sheet의 'em' 시트 데이터를 불러와 신규 사용자를 등록합니다.</p>
+                             <button class="btn btn-outline-secondary font-bold text-sm" onclick="alert('Apps Script 연동 필요')">
+                                <i class="bi bi-cloud-arrow-down-fill me-1"></i> 데이터 동기화
                             </button>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100">
-                        <h5 class="font-bold text-slate-800 mb-4 text-sm flex items-center gap-2">
-                            <i class="bi bi-person-lines-fill text-slate-500"></i> 결재선(Approver) 설정
-                        </h5>
-                        <div class="flex gap-2 mb-4">
-                            <input type="text" id="admin-user-search" class="form-control text-sm" placeholder="직원 이름 검색...">
-                            <button class="btn btn-dark text-sm font-bold whitespace-nowrap" onclick="searchUserForApprover()">검색</button>
-                        </div>
-                        
-                        <div class="overflow-x-auto">
-                            <table class="table table-hover text-sm align-middle">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>이름</th>
-                                        <th>이메일</th>
-                                        <th>현재 결재자</th>
-                                        <th>설정</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="admin-user-list-body">
-                                    <tr><td colspan="4" class="text-center text-slate-400 py-4">검색 결과가 여기에 표시됩니다.</td></tr>
-                                </tbody>
-                            </table>
                         </div>
                     </div>
                 </div>
@@ -285,7 +264,8 @@
                 </div>
                 <div class="modal-body p-6">
                     <form id="leave-form" class="space-y-4">
-                        <input type="hidden" id="leave-type"> <div>
+                        <input type="hidden" id="leave-type"> 
+                        <div>
                             <label class="block text-xs font-bold text-slate-400 mb-2">사용 형태</label>
                             <div class="grid grid-cols-3 gap-2" id="leave-subtype-container">
                                 <input type="radio" class="btn-check" name="subtype" id="st-full" value="1.0" checked onchange="toggleTimeInputs()">
@@ -295,7 +275,7 @@
                                 <label class="btn btn-outline-light text-slate-600 border-slate-200 font-bold text-sm" for="st-half">0.5일 (반차)</label>
 
                                 <input type="radio" class="btn-check" name="subtype" id="st-quarter" value="0.25" onchange="toggleTimeInputs()">
-                                <label class="btn btn-outline-light text-slate-600 border-slate-200 font-bold text-sm" for="st-quarter">0.25일</label>
+                                <label class="btn btn-outline-light text-slate-600 border-slate-200 font-bold text-sm" for="st-quarter">0.25일 (2H)</label>
                             </div>
                         </div>
 
@@ -305,7 +285,7 @@
                         </div>
 
                         <div id="time-select-area" class="hidden p-3 bg-slate-50 rounded-xl border border-slate-100">
-                             <label class="block text-xs font-bold text-slate-400 mb-1">상세 시간</label>
+                             <label class="block text-xs font-bold text-slate-400 mb-1">상세 시간 선택</label>
                              <select id="leave-time-option" class="form-select text-sm font-bold text-slate-600">
                                  </select>
                         </div>
@@ -318,7 +298,7 @@
                 </div>
                 <div class="modal-footer border-0 px-6 pb-6 pt-0">
                     <button type="button" class="btn btn-light rounded-xl font-bold text-slate-500" data-bs-dismiss="modal">취소</button>
-                    <button type="button" class="btn bg-[#D80027] text-white rounded-xl font-bold shadow-lg shadow-red-200 hover:bg-[#B91C1C]" onclick="submitLeave()">신청하기</button>
+                    <button type="button" class="btn bg-[#D80027] text-white rounded-xl font-bold shadow-lg shadow-red-200 hover:bg-[#B91C1C]" onclick="submitLeave()">결재 요청</button>
                 </div>
             </div>
         </div>
@@ -367,15 +347,15 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // --- 1. Firebase Config (사용자 프로젝트 정보로 교체 필요) ---
-const firebaseConfig = {
-  apiKey: "AIzaSyCQIoRTZfftn5imHfHzz78zhyGN74miAYE",
-  authDomain: "swsdayoff.firebaseapp.com",
-  projectId: "swsdayoff",
-  storageBucket: "swsdayoff.firebasestorage.app",
-  messagingSenderId: "1093357646858",
-  appId: "1:1093357646858:web:f334a1a2488195cbebdbf3"
-};
+        // --- 1. Firebase Configuration ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCQIoRTZfftn5imHfHzz78zhyGN74miAYE",
+            authDomain: "swsdayoff.firebaseapp.com",
+            projectId: "swsdayoff",
+            storageBucket: "swsdayoff.firebasestorage.app",
+            messagingSenderId: "1093357646858",
+            appId: "1:1093357646858:web:f334a1a2488195cbebdbf3"
+        };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
@@ -393,30 +373,28 @@ const firebaseConfig = {
         auth.onAuthStateChanged(async (user) => {
             const loading = document.getElementById('loading-screen');
             if (user) {
-                // Firestore에서 사용자 정보 조회 (Sheet 동기화된 데이터)
-                const doc = await db.collection('users').doc(user.email).get();
-                if (doc.exists) {
-                    currentUser = { email: user.email, ...doc.data() };
-                    
-                    // UI 세팅
-                    document.getElementById('user-info-name').innerText = currentUser.name;
-                    document.getElementById('user-info-team').innerText = currentUser.team;
-                    
-                    // 권한별 메뉴 처리
-                    if(currentUser.isAdmin) document.getElementById('menu-admin').classList.remove('hidden');
-                    
-                    // 화면 전환
-                    document.getElementById('login-container').classList.add('d-none');
-                    document.getElementById('app-container').classList.remove('d-none');
-                    
-                    // 초기 데이터 로드
-                    loadMyBalance();
-                    loadMyLeaves();
-                    showPage('page-my-leave');
-                } else {
-                    alert('등록된 사용자가 아닙니다. (EM 시트에 등록 필요)');
-                    auth.signOut();
-                }
+                try {
+                    const doc = await db.collection('users').doc(user.email).get();
+                    if (doc.exists) {
+                        currentUser = { email: user.email, ...doc.data() };
+                        
+                        // UI Setup
+                        document.getElementById('user-info-name').innerText = currentUser.name;
+                        document.getElementById('user-info-team').innerText = currentUser.team;
+                        
+                        if(currentUser.isAdmin) document.getElementById('menu-admin').classList.remove('hidden');
+                        
+                        document.getElementById('login-container').classList.add('d-none');
+                        document.getElementById('app-container').classList.remove('d-none');
+                        
+                        loadMyBalance();
+                        loadMyLeaves();
+                        showPage('page-my-leave');
+                    } else {
+                        alert('등록된 사용자가 아닙니다. (관리자에게 문의)');
+                        auth.signOut();
+                    }
+                } catch(e) { console.error(e); alert('로그인 처리 중 오류가 발생했습니다.'); }
             } else {
                 document.getElementById('login-container').classList.remove('d-none');
                 document.getElementById('app-container').classList.add('d-none');
@@ -424,34 +402,26 @@ const firebaseConfig = {
             loading.classList.add('hidden');
         });
 
-        // --- 4. Page Navigation (수정됨: 초기 로딩 에러 방지) ---
+        // --- 4. Page Navigation ---
         window.showPage = (pageId) => {
-            // 1. 모든 페이지 숨김
             document.querySelectorAll('main > div > div[id^="page-"]').forEach(el => el.classList.add('d-none'));
-            
-            // 2. 해당 페이지 표시
             const targetPage = document.getElementById(pageId);
             if (targetPage) targetPage.classList.remove('d-none');
             
-            // 3. 네비게이션 버튼 활성화 (에러 수정 부분)
+            // Menu Active State
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            
-            // (1) 클릭해서 들어온 경우 (event가 존재)
             if (window.event && window.event.currentTarget && window.event.currentTarget.classList) {
                 window.event.currentTarget.classList.add('active');
-            } 
-            // (2) 자동 로그인으로 들어온 경우 (event 없음 -> 수동으로 첫 번째 메뉴 활성화)
-            else if (pageId === 'page-my-leave') {
+            } else if (pageId === 'page-my-leave') {
                 const myLeaveBtn = document.querySelector('button[onclick*="page-my-leave"]');
                 if(myLeaveBtn) myLeaveBtn.classList.add('active');
             }
 
-            // 추가 로직 실행
             if(pageId === 'page-team-calendar') initCalendar();
             if(pageId === 'page-approval') loadApprovalList();
         };
 
-        // --- 5. Leave Application Logic ---
+        // --- 5. Leave Application Logic (Updated for 0.25 & 2-Step Approval) ---
         function toggleTimeInputs() {
             const val = document.querySelector('input[name="subtype"]:checked').value;
             const area = document.getElementById('time-select-area');
@@ -463,12 +433,18 @@ const firebaseConfig = {
                 area.classList.remove('hidden');
                 select.innerHTML = '';
                 if(val === '0.5') {
-                    select.innerHTML = '<option value="오전">오전 반차 (09:00~13:00)</option><option value="오후">오후 반차 (14:00~18:00)</option>';
-                } else { // 0.25
                     select.innerHTML = `
-                        <option value="지각">지각 (Late Arrival)</option>
-                        <option value="조퇴">조퇴 (Early Leave)</option>
-                        <option value="외출">외출 (During Work)</option>
+                        <option value="오전">오전 반차 (09:00~13:00)</option>
+                        <option value="오후">오후 반차 (14:00~18:00)</option>
+                    `;
+                } else if (val === '0.25') {
+                    // 2시간 단위 선택
+                    select.innerHTML = `
+                        <option value="09:00-11:00">09:00 ~ 11:00 (2시간)</option>
+                        <option value="11:00-13:00">11:00 ~ 13:00 (2시간)</option>
+                        <option value="13:00-15:00">13:00 ~ 15:00 (2시간)</option>
+                        <option value="15:00-17:00">15:00 ~ 17:00 (2시간)</option>
+                        <option value="16:00-18:00">16:00 ~ 18:00 (2시간)</option>
                     `;
                 }
             }
@@ -491,12 +467,15 @@ const firebaseConfig = {
 
             if(!date) return alert('날짜를 선택해주세요.');
 
-            // 잔여 확인 로직
+            // Check Balance
             const balanceKey = type === 'annual' ? 'leaveBalance' : 'compLeaveBalance';
-            if(currentUser[balanceKey] < subtypeVal) return alert('잔여 일수가 부족합니다.');
+            if((currentUser[balanceKey] || 0) < subtypeVal) return alert('잔여 일수가 부족합니다.');
 
-            // 결재자 설정 (기본: 팀 설정 또는 자동)
-            const approver = currentUser.approver1 || 'team_leader_email@sws.com'; // 실제 로직에선 Firestore 팀 설정 조회 필요
+            // Check Approver Settings
+            const approver1 = currentUser.approver1;
+            const approver2 = currentUser.approver2;
+
+            if(!approver1) return alert('1차 결재자(팀장)가 설정되지 않았습니다. 관리자에게 문의하세요.');
 
             try {
                 await db.collection('leaves').add({
@@ -508,17 +487,22 @@ const firebaseConfig = {
                     date: date,
                     timeOption: timeOption,
                     reason: reason,
+                    
+                    // 2-Step Approval Logic
+                    approver1: approver1,
+                    approver2: approver2 || '', // Optional
+                    currentStep: 1, // Start at step 1
                     status: 'pending',
-                    approver1: approver,
+                    
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                alert('신청되었습니다.');
+                alert('결재 요청이 전송되었습니다.');
                 bootstrap.Modal.getInstance(document.getElementById('leaveApplyModal')).hide();
                 loadMyLeaves();
-            } catch(e) { console.error(e); alert('오류 발생'); }
+            } catch(e) { console.error(e); alert('신청 중 오류가 발생했습니다.'); }
         }
 
-        // --- 6. Compensatory Work Request Logic ---
+        // --- 6. Compensatory Work Logic ---
         function openCompRequestModal() { new bootstrap.Modal(document.getElementById('compRequestModal')).show(); }
 
         function calcExpectedCredit() {
@@ -535,12 +519,14 @@ const firebaseConfig = {
             const reason = document.getElementById('comp-reason').value;
             
             if(!date || !hours) return alert('날짜와 시간을 입력하세요.');
-
+            
             let requestedCredit = 0;
             if(hours >= 8) requestedCredit = 1.0;
             else if(hours >= 4) requestedCredit = 0.5;
 
             try {
+                // Comp request follows same approver logic or simplified one.
+                // Here we use the main approver1 for simplicity.
                 await db.collection('comp_requests').add({
                     requester: currentUser.email,
                     requesterName: currentUser.name,
@@ -549,24 +535,21 @@ const firebaseConfig = {
                     requestedCredit: requestedCredit,
                     reason: reason,
                     status: 'pending',
-                    approver1: currentUser.approver1 || 'team_leader_default',
+                    approver1: currentUser.approver1 || 'admin', 
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                alert('휴일 근무 등록이 신청되었습니다. 결재 후 잔여 일수에 반영됩니다.');
+                alert('휴일 근무 등록 신청 완료.');
                 bootstrap.Modal.getInstance(document.getElementById('compRequestModal')).hide();
-            } catch(e) { alert('오류'); }
+            } catch(e) { alert('오류 발생'); }
         }
 
         // --- 7. Data Loading ---
         function loadMyBalance() {
-            // 실시간 리스너로 잔여 연차 업데이트
             db.collection('users').doc(currentUser.email).onSnapshot(doc => {
                 const data = doc.data();
-                currentUser = { ...currentUser, ...data }; // Update global state
-                document.getElementById('balance-annual').innerHTML = `${data.leaveBalance || 0} <span class="text-lg text-slate-400 font-medium">Day</span>`;
-                document.getElementById('balance-comp').innerHTML = `${data.compLeaveBalance || 0} <span class="text-lg text-slate-400 font-medium">Day</span>`;
-                
-                // 소멸 예정일 계산 (Admin 설정값 기반 - 예시: 내년 2월)
+                currentUser = { ...currentUser, ...data };
+                document.getElementById('balance-annual').innerHTML = `${(data.leaveBalance || 0).toFixed(2)} <span class="text-lg text-slate-400 font-medium">Day</span>`;
+                document.getElementById('balance-comp').innerHTML = `${(data.compLeaveBalance || 0).toFixed(2)} <span class="text-lg text-slate-400 font-medium">Day</span>`;
                 const nextYear = new Date().getFullYear() + 1;
                 document.getElementById('expiry-annual').innerText = `${nextYear}.02.28`;
             });
@@ -576,17 +559,20 @@ const firebaseConfig = {
             const list = document.getElementById('my-leave-list');
             const snap = await db.collection('leaves')
                 .where('requester', '==', currentUser.email)
-                .orderBy('date', 'desc')
+                .orderBy('createdAt', 'desc')
                 .limit(10)
                 .get();
             
             list.innerHTML = '';
             snap.forEach(doc => {
                 const d = doc.data();
-                let badgeClass = d.days === 1 ? 'badge-annual' : (d.days === 0.5 ? 'badge-half' : 'badge-quarter');
+                let badgeClass = d.days >= 1 ? 'badge-annual' : (d.days === 0.5 ? 'badge-half' : 'badge-quarter');
                 if(d.type === 'comp') badgeClass = 'badge-comp';
                 
-                let statusBadge = d.status === 'approved' ? '<span class="text-green-600 font-bold">승인</span>' : (d.status === 'rejected' ? '<span class="text-red-500 font-bold">반려</span>' : '<span class="text-slate-400 font-bold">결재중</span>');
+                let statusBadge = '';
+                if(d.status === 'approved') statusBadge = '<span class="text-green-600 font-bold">승인 완료</span>';
+                else if(d.status === 'rejected') statusBadge = '<span class="text-red-500 font-bold">반려</span>';
+                else statusBadge = `<span class="text-slate-500 font-bold">${d.currentStep}차 결재 중</span>`;
 
                 list.innerHTML += `
                     <div class="list-group-item p-4 border-b border-slate-50 hover:bg-slate-50 transition flex justify-between items-center">
@@ -604,7 +590,104 @@ const firebaseConfig = {
             });
         }
 
-        // --- 8. Calendar (FullCalendar) ---
+        // --- 8. Approval Logic (1st/2nd Step) ---
+        async function loadApprovalList() {
+            const container = document.getElementById('approval-list-container');
+            container.innerHTML = '<div class="p-6 text-center"><div class="spinner-border text-[#D80027]"></div></div>';
+            
+            // Get all pending leaves (In production, use better composite index queries)
+            const snap = await db.collection('leaves').where('status', '==', 'pending').get();
+            
+            let html = '';
+            snap.forEach(doc => {
+                const d = doc.data();
+                const myEmail = currentUser.email;
+                let showBtn = false;
+
+                // [Logic] Am I the current approver?
+                if (d.currentStep === 1 && d.approver1 === myEmail) showBtn = true;
+                if (d.currentStep === 2 && d.approver2 === myEmail) showBtn = true;
+
+                if (showBtn) {
+                    html += `
+                        <div class="border-b border-slate-100 p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                            <div>
+                                <span class="badge bg-slate-800 text-white text-[10px] mb-2">${d.currentStep}차 결재 대기</span>
+                                <div class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                                    ${d.requesterName} <span class="text-sm font-normal text-slate-500">(${d.team})</span>
+                                </div>
+                                <div class="text-sm text-slate-600 mt-1">
+                                    <span class="font-bold text-[#D80027]">${d.date}</span> 
+                                    (${d.days}일 ${d.timeOption ? '/ ' + d.timeOption : ''})
+                                </div>
+                                <p class="text-xs text-slate-400 mt-1 mb-0"><i class="bi bi-chat-quote me-1"></i>${d.reason}</p>
+                            </div>
+                            <div class="flex gap-2 w-full md:w-auto">
+                                <button class="btn btn-outline-secondary rounded-xl font-bold text-sm flex-1 md:flex-none" onclick="processApproval('${doc.id}', false)">반려</button>
+                                <button class="btn bg-[#D80027] text-white rounded-xl font-bold text-sm flex-1 md:flex-none hover:bg-[#B91C1C]" onclick="processApproval('${doc.id}', true)">승인</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            
+            if (!html) container.innerHTML = '<div class="p-10 text-center text-slate-400 font-bold text-sm">결재할 문서가 없습니다.</div>';
+            else container.innerHTML = html;
+        }
+
+        async function processApproval(docId, isApproved) {
+            if(!confirm(isApproved ? '승인하시겠습니까?' : '반려하시겠습니까?')) return;
+            
+            try {
+                const docRef = db.collection('leaves').doc(docId);
+                
+                await db.runTransaction(async (t) => {
+                    const docSnap = await t.get(docRef);
+                    if (!docSnap.exists) throw "Document does not exist!";
+                    const data = docSnap.data();
+
+                    if (!isApproved) {
+                        // Reject: Stop process immediately
+                        t.update(docRef, { status: 'rejected' });
+                    } else {
+                        // Approve Logic
+                        if (data.currentStep === 1) {
+                            if (data.approver2) {
+                                // Go to Step 2
+                                t.update(docRef, { currentStep: 2 });
+                            } else {
+                                // No Step 2 -> Finalize
+                                await finalizeLeave(t, docRef, data);
+                            }
+                        } else if (data.currentStep === 2) {
+                            // Step 2 Approved -> Finalize
+                            await finalizeLeave(t, docRef, data);
+                        }
+                    }
+                });
+
+                alert('처리되었습니다.');
+                loadApprovalList();
+            } catch(e) { console.error(e); alert('처리 중 오류가 발생했습니다.'); }
+        }
+
+        async function finalizeLeave(transaction, docRef, data) {
+            // 1. Update Leave Status
+            transaction.update(docRef, { status: 'approved', currentStep: 3 }); // 3 = Completed
+            
+            // 2. Deduct Balance from User
+            const userRef = db.collection('users').doc(data.requester);
+            const userDoc = await transaction.get(userRef);
+            if (!userDoc.exists) throw "User not found";
+            
+            const field = data.type === 'annual' ? 'leaveBalance' : 'compLeaveBalance';
+            const currentBal = userDoc.data()[field] || 0;
+            const newBal = currentBal - data.days;
+            
+            transaction.update(userRef, { [field]: newBal });
+        }
+
+        // --- 9. Calendar ---
         function initCalendar() {
             if(calendarInstance) return calendarInstance.render();
             
@@ -612,27 +695,21 @@ const firebaseConfig = {
             calendarInstance = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 locale: 'ko',
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,listWeek'
-                },
+                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,listWeek' },
                 height: '100%',
                 events: async function(info, successCallback, failureCallback) {
-                    // 권한 확인: 'viewAll' 권한자는 전체, 아니면 본인 팀만 쿼리
                     let query = db.collection('leaves').where('status', '==', 'approved');
                     if (!currentUser.viewAll && !currentUser.isAdmin) {
                         query = query.where('team', '==', currentUser.team);
                     }
-                    
                     const snap = await query.get();
                     let events = [];
                     snap.forEach(doc => {
                         const d = doc.data();
-                        let color = '#3B82F6'; // Blue (Annual)
-                        if(d.days === 0.5) color = '#6366F1'; // Indigo
-                        if(d.days === 0.25) color = '#A855F7'; // Purple
-                        if(d.type === 'comp') color = '#10B981'; // Green
+                        let color = '#3B82F6'; 
+                        if(d.days === 0.5) color = '#6366F1'; 
+                        if(d.days === 0.25) color = '#A855F7'; 
+                        if(d.type === 'comp') color = '#10B981';
 
                         events.push({
                             title: `${d.requesterName} (${d.days})`,
@@ -642,39 +719,20 @@ const firebaseConfig = {
                         });
                     });
                     successCallback(events);
-                },
-                eventClick: function(info) {
-                    // HR 팀이거나 관리자인 경우 취소 가능 로직 추가 가능
-                    alert(`${info.event.title}\n사유: ${info.event.extendedProps.reason}`);
                 }
             });
             calendarInstance.render();
         }
 
-        // --- 9. Admin Functions ---
-        async function syncUsersFromSheet() {
-            // 실제 구현: Google Apps Script Web App을 호출하여 Sheet 데이터를 JSON으로 받아오고
-            // Firestore 'users' 컬렉션에 set/update 하는 로직 필요.
-            alert('Google Sheet와 연동된 Apps Script URL이 필요합니다.\n(현재는 데모용 알림입니다.)');
-            // 예시: fetch('GAS_WEB_APP_URL').then(res => res.json()).then(data => updateFirestore(data));
-        }
-
-        function saveAdminSettings() {
-            // Firestore 'settings' 컬렉션에 저장
-            alert('설정이 저장되었습니다.');
-        }
-
-        // --- [Admin] 결재선 관리 ---
+        // --- 10. Admin: Approver Settings ---
         async function searchUserForApprover() {
             const keyword = document.getElementById('admin-user-search').value.trim();
-            if(!keyword) return alert("검색어를 입력하세요.");
+            if(!keyword) return alert("이름을 입력하세요.");
 
             const tbody = document.getElementById('admin-user-list-body');
             tbody.innerHTML = '<tr><td colspan="4" class="text-center"><div class="spinner-border spinner-border-sm"></div></td></tr>';
 
             try {
-                // Firestore에서 전체 유저 가져와서 필터링 (간이 구현)
-                // 실제로는 Firestore 쿼리를 쓰는게 좋지만, 'name' 필드는 like 검색이 안되므로 전체 로드 후 필터
                 const snapshot = await db.collection('users').get();
                 let html = '';
                 
@@ -683,43 +741,47 @@ const firebaseConfig = {
                     if (u.name.includes(keyword) || u.email.includes(keyword)) {
                         html += `
                             <tr>
-                                <td class="font-bold">${u.name}</td>
-                                <td class="text-slate-500 text-xs">${u.email}</td>
                                 <td>
-                                    <input type="email" id="appr-${doc.id}" class="form-control form-control-sm" 
-                                        value="${u.approver1 || ''}" placeholder="결재자 이메일 입력">
+                                    <div class="font-bold text-slate-800">${u.name}</div>
+                                    <div class="text-xs text-slate-500">${u.email}</div>
                                 </td>
                                 <td>
-                                    <button class="btn btn-sm btn-outline-primary font-bold text-xs" 
-                                        onclick="updateApprover('${doc.id}')">저장</button>
+                                    <input type="email" id="appr1-${doc.id}" class="form-control form-control-sm" 
+                                        value="${u.approver1 || ''}" placeholder="팀장 이메일 (필수)">
+                                </td>
+                                <td>
+                                    <input type="email" id="appr2-${doc.id}" class="form-control form-control-sm" 
+                                        value="${u.approver2 || ''}" placeholder="대표/이사 (선택)">
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm bg-slate-800 text-white font-bold" 
+                                        onclick="saveApprovers('${doc.id}')">저장</button>
                                 </td>
                             </tr>
                         `;
                     }
                 });
 
-                if(html === '') html = '<tr><td colspan="4" class="text-center py-4">검색 결과가 없습니다.</td></tr>';
-                tbody.innerHTML = html;
-
+                tbody.innerHTML = html || '<tr><td colspan="4" class="text-center py-4">검색 결과가 없습니다.</td></tr>';
             } catch(e) {
                 console.error(e);
-                tbody.innerHTML = '<tr><td colspan="4" class="text-danger text-center">오류 발생</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center">오류 발생</td></tr>';
             }
         }
 
-        async function updateApprover(targetEmail) {
-            const newApprover = document.getElementById(`appr-${targetEmail}`).value.trim();
-            if(!newApprover) return alert("결재자 이메일을 입력하세요.");
-            if(!newApprover.includes('@')) return alert("올바른 이메일 형식이 아닙니다.");
+        async function saveApprovers(targetUid) {
+            const a1 = document.getElementById(`appr1-${targetUid}`).value.trim();
+            const a2 = document.getElementById(`appr2-${targetUid}`).value.trim();
+
+            if(!a1) return alert('1차 결재자는 필수입니다.');
 
             try {
-                await db.collection('users').doc(targetEmail).update({
-                    approver1: newApprover
+                await db.collection('users').doc(targetUid).update({
+                    approver1: a1,
+                    approver2: a2
                 });
-                alert("결재선이 저장되었습니다.");
-            } catch(e) {
-                alert("저장 실패: " + e.message);
-            }
+                alert('결재선이 저장되었습니다.');
+            } catch(e) { alert("저장 실패: " + e.message); }
         }
 
     </script>
