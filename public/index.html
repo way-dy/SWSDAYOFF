@@ -1,89 +1,618 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWS 연차관리 시스템 | Leave Management</title>
+    
+    <link rel="icon" type="image/png" href="https://drive.google.com/thumbnail?id=1McMtz9rJFz_wUd-xNiKSdDrpiE91XJmb&sz=w128">
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/12.8.0/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/12.8.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
+    <style>
+        :root {
+            --brand-color: #D80027; /* Swiss Red */
+            --brand-bg-light: #FFF1F2;
+            --brand-hover: #B91C1C;
+        }
+
+        body { font-family: 'Pretendard', sans-serif; background-color: #F8F9FA; color: #334155; }
+        
+        /* 스크롤바 */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        
+        /* 커스텀 스타일 */
+        .glass-effect { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); }
+        .nav-link.active { background-color: #FFF1F2 !important; color: #D80027 !important; font-weight: 700; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        
+        /* FullCalendar Customization for SWS Brand */
+        .fc-event { border: none; border-radius: 6px; padding: 2px 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+        .fc-day-today { background-color: #FFF1F2 !important; }
+        .fc-toolbar-title { font-size: 1.25rem !important; font-weight: 800 !important; color: #334155; }
+        .fc-button-primary { background-color: #334155 !important; border: none !important; }
+        .fc-button-primary:hover { background-color: #D80027 !important; }
+
+        /* 상태 배지 */
+        .badge-annual { background-color: #DBEAFE; color: #1E40AF; } /* 연차 Blue */
+        .badge-half { background-color: #E0E7FF; color: #3730A3; } /* 반차 Indigo */
+        .badge-quarter { background-color: #F3E8FF; color: #6B21A8; } /* 반반차 Purple */
+        .badge-comp { background-color: #DCFCE7; color: #166534; } /* 대체휴무 Green */
     </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+</head>
+<body class="antialiased selection:bg-[#D80027] selection:text-white">
+
+    <div id="loading-screen" class="fixed inset-0 glass-effect z-[9999] flex flex-col justify-center items-center">
+        <div class="relative flex justify-center items-center">
+            <div class="absolute animate-ping inline-flex h-16 w-16 rounded-full bg-[#D80027] opacity-20"></div>
+            <div class="spinner-border text-[#D80027]" role="status" style="width: 3.5rem; height: 3.5rem;"></div>
+        </div>
+        <p class="mt-6 text-slate-500 font-bold text-sm tracking-widest animate-pulse uppercase">SWS Leave System</p>
     </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
+
+    <div id="login-container" class="min-h-screen flex items-center justify-center bg-[#F8F9FA] d-none relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#D80027] via-red-500 to-[#D80027]"></div>
+        <div class="relative bg-white p-12 rounded-[2rem] shadow-xl text-center max-w-md w-full border border-slate-100 mx-4">
+            <div class="mb-10">
+                <div class="flex justify-center mb-6">
+                    <img src="https://drive.google.com/thumbnail?id=1Hj89CAuIsG6CEJ6OAD_QZJfnc2uTIBuw&sz=w400" alt="SWS Logo" class="h-16 w-auto object-contain">
+                </div>
+                <h1 class="text-2xl font-black text-slate-900 mb-1">SWS 연차관리 시스템</h1>
+                <p class="text-slate-400 text-xs font-semibold uppercase tracking-widest">Annual Leave & Holiday Work</p>
+            </div>
+            <button id="btn-google-login" class="w-full bg-white border border-slate-200 hover:border-[#D80027] hover:bg-red-50/30 text-slate-700 font-bold py-4 px-6 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-3 text-sm group">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5">
+                <span class="group-hover:text-[#D80027] transition-colors">Google 계정으로 로그인</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="app-container" class="d-none flex h-screen overflow-hidden bg-[#F8F9FA]">
+        
+        <aside class="w-72 bg-white border-r border-slate-100 flex flex-col hidden md:flex z-40">
+            <div class="px-6 py-8 h-32 border-b border-dashed border-slate-200 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-[#D80027]"></div>
+                <img src="https://drive.google.com/thumbnail?id=1Hj89CAuIsG6CEJ6OAD_QZJfnc2uTIBuw&sz=w400" class="h-8 w-auto mb-3">
+                <div class="text-sm font-extrabold text-slate-900 tracking-tight flex items-center gap-2">LEAVE MANAGER <span class="text-[#D80027]">SYS</span></div>
+            </div>
+            
+            <nav class="flex-1 overflow-y-auto p-4 space-y-2">
+                <div class="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-2 mt-4 px-4">My Menu</div>
+                
+                <button class="nav-item w-full text-left px-5 py-3.5 rounded-2xl text-slate-500 hover:bg-[#FFF1F2] hover:text-[#D80027] transition-all flex items-center gap-4 active font-bold" onclick="showPage('page-my-leave')">
+                    <i class="bi bi-calendar-check text-lg"></i> 내 연차 관리
+                </button>
+                <button class="nav-item w-full text-left px-5 py-3.5 rounded-2xl text-slate-500 hover:bg-[#FFF1F2] hover:text-[#D80027] transition-all flex items-center gap-4" onclick="showPage('page-team-calendar')">
+                    <i class="bi bi-calendar3-range text-lg"></i> 연차 현황 (캘린더)
+                </button>
+
+                <div class="border-t border-slate-100 my-4 mx-4"></div>
+                <div class="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-2 px-4">Management</div>
+
+                <button class="nav-item w-full text-left px-5 py-3.5 rounded-2xl text-slate-500 hover:bg-[#FFF1F2] hover:text-[#D80027] transition-all flex items-center gap-4" onclick="showPage('page-approval')">
+                    <div class="relative"><i class="bi bi-stamp text-lg"></i>
+                        <span id="badge-approval" class="absolute -top-1 -right-2 bg-[#D80027] text-white text-[10px] font-bold px-1.5 rounded-full hidden">0</span>
+                    </div> 전자 결재함
+                </button>
+                
+                <button id="menu-admin" class="nav-item w-full text-left px-5 py-3.5 rounded-2xl text-slate-500 hover:bg-[#FFF1F2] hover:text-[#D80027] transition-all flex items-center gap-4 hidden" onclick="showPage('page-admin')">
+                    <i class="bi bi-gear-wide-connected text-lg"></i> 시스템 관리
+                </button>
+            </nav>
+
+            <div class="p-5 border-t border-slate-100 bg-slate-50/50">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 rounded-full bg-[#D80027] text-white flex items-center justify-center font-bold shadow-md shadow-red-200"><i class="bi bi-person-fill"></i></div>
+                    <div class="overflow-hidden">
+                        <div id="user-info-name" class="font-bold text-sm text-slate-800 truncate">User</div>
+                        <div id="user-info-team" class="text-xs text-slate-500 truncate font-medium">Team</div>
+                    </div>
+                </div>
+                <button onclick="auth.signOut()" class="w-full text-xs text-slate-400 hover:text-[#D80027] py-2 font-bold text-center">로그아웃</button>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col min-w-0 bg-[#F8F9FA] overflow-hidden relative">
+            <header class="md:hidden bg-white h-14 border-b flex items-center px-4 justify-between">
+                <span class="font-bold text-[#D80027]">SWS Leave System</span>
+                <button onclick="alert('모바일 메뉴 준비중')" class="text-2xl"><i class="bi bi-list"></i></button>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-6 md:p-10 max-w-7xl mx-auto w-full">
+                
+                <div id="page-my-leave" class="fade-in">
+                    <h3 class="text-2xl font-black text-slate-800 mb-6 flex items-center gap-2">
+                        <span class="bg-[#D80027] text-white rounded-lg w-8 h-8 flex items-center justify-center text-sm"><i class="bi bi-person-check-fill"></i></span> 내 연차 관리
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100 relative overflow-hidden group">
+                            <div class="absolute right-0 top-0 w-32 h-32 bg-blue-50 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+                            <div class="flex justify-between items-start relative z-10">
+                                <div>
+                                    <h6 class="text-slate-500 font-bold text-xs uppercase tracking-wider mb-1">정기 연차 잔여</h6>
+                                    <div class="text-4xl font-black text-slate-800 tracking-tight" id="balance-annual">0.0 <span class="text-lg text-slate-400 font-medium">Day</span></div>
+                                    <p class="text-xs text-slate-400 mt-2 font-medium"><i class="bi bi-info-circle me-1"></i>소멸 예정일: <span id="expiry-annual">-</span></p>
+                                </div>
+                                <button class="btn bg-slate-800 text-white rounded-xl font-bold text-sm px-4 py-2 hover:bg-slate-900 shadow-lg shadow-slate-200 transition-transform active:scale-95" onclick="openApplyModal('annual')">
+                                    <i class="bi bi-plus-lg me-1"></i>연차 신청
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100 relative overflow-hidden">
+                            <div class="absolute right-0 top-0 w-32 h-32 bg-green-50 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+                            <div class="flex justify-between items-start relative z-10">
+                                <div>
+                                    <h6 class="text-slate-500 font-bold text-xs uppercase tracking-wider mb-1">대체 휴무(보상) 잔여</h6>
+                                    <div class="text-4xl font-black text-slate-800 tracking-tight" id="balance-comp">0.0 <span class="text-lg text-slate-400 font-medium">Day</span></div>
+                                    <p class="text-xs text-slate-400 mt-2 font-medium"><i class="bi bi-clock-history me-1"></i>2개월 내 미사용 시 소멸</p>
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <button class="btn bg-[#10B981] text-white rounded-xl font-bold text-sm px-4 py-2 hover:bg-[#059669] shadow-lg shadow-green-200 transition-transform active:scale-95" onclick="openCompRequestModal()">
+                                        <i class="bi bi-stopwatch me-1"></i>휴일근무 등록
+                                    </button>
+                                    <button class="btn bg-white border border-slate-200 text-slate-600 rounded-xl font-bold text-xs px-4 py-1.5 hover:bg-slate-50" onclick="openApplyModal('comp')">
+                                        사용 신청
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-[1.5rem] shadow-sm border border-slate-100 overflow-hidden">
+                        <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                            <h5 class="font-bold text-slate-800 text-sm flex items-center gap-2"><i class="bi bi-list-check"></i> 최근 신청 이력</h5>
+                            <span class="text-xs text-slate-400 font-medium">* 클릭하여 상세 조회</span>
+                        </div>
+                        <div class="list-group list-group-flush" id="my-leave-list">
+                            </div>
+                    </div>
+                </div>
+
+                <div id="page-team-calendar" class="d-none">
+                    <div class="flex justify-between items-end mb-6">
+                        <div>
+                            <h3 class="text-2xl font-black text-slate-800 flex items-center gap-2">
+                                <span class="bg-indigo-600 text-white rounded-lg w-8 h-8 flex items-center justify-center text-sm"><i class="bi bi-calendar3"></i></span> 연차 현황판
+                            </h3>
+                            <p class="text-slate-500 text-xs mt-1 font-bold ms-10" id="calendar-subtitle">팀원의 휴가 일정을 확인하세요.</p>
+                        </div>
+                        <div class="flex gap-2 text-xs font-bold">
+                            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-blue-100 border border-blue-200"></span> 연차</span>
+                            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-indigo-100 border border-indigo-200"></span> 반차</span>
+                            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-purple-100 border border-purple-200"></span> 0.25</span>
+                            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-green-100 border border-green-200"></span> 대체</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100 h-[700px]">
+                        <div id="full-calendar"></div>
+                    </div>
+                </div>
+
+                <div id="page-approval" class="d-none">
+                    <h3 class="text-2xl font-black text-slate-800 mb-6 flex items-center gap-2">
+                        <span class="bg-[#D80027] text-white rounded-lg w-8 h-8 flex items-center justify-center text-sm"><i class="bi bi-stamp"></i></span> 결재 대기 문서
+                    </h3>
+                    <div class="bg-white rounded-[1.5rem] shadow-sm border border-slate-100" id="approval-list-container">
+                        </div>
+                </div>
+
+                <div id="page-admin" class="d-none">
+                     <h3 class="text-2xl font-black text-slate-800 mb-6 flex items-center gap-2">
+                        <span class="bg-slate-800 text-white rounded-lg w-8 h-8 flex items-center justify-center text-sm"><i class="bi bi-gear-fill"></i></span> 시스템 관리
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100">
+                            <h5 class="font-bold text-slate-800 mb-4 text-sm">연차/대체휴무 소멸 설정</h5>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 block mb-1">정기 연차 만료일 (매년)</label>
+                                    <input type="month" class="form-control" id="admin-annual-expiry" value="2027-02">
+                                    <p class="text-[10px] text-slate-400 mt-1">해당 월 말일까지 사용 가능</p>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 block mb-1">대체휴무 유효기간 (개월)</label>
+                                    <input type="number" class="form-control" id="admin-comp-expiry-months" value="2">
+                                    <p class="text-[10px] text-slate-400 mt-1">발생일(승인일)로부터 자동 계산</p>
+                                </div>
+                                <button class="btn btn-sm bg-[#D80027] text-white w-full font-bold" onclick="saveAdminSettings()">설정 저장</button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100">
+                            <h5 class="font-bold text-slate-800 mb-4 text-sm">인사 데이터 동기화 (EM Sheet)</h5>
+                            <p class="text-xs text-slate-500 mb-4">Google Sheet의 'em' 시트 데이터를 불러와 사용자 정보를 업데이트합니다.</p>
+                            <button class="btn btn-outline-secondary w-full font-bold text-sm" onclick="syncUsersFromSheet()">
+                                <i class="bi bi-cloud-arrow-down-fill me-1"></i> 데이터 동기화 실행
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <div class="modal fade" id="leaveApplyModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-[1.5rem] border-0 shadow-2xl">
+                <div class="modal-header border-0 pb-0 px-6 pt-6">
+                    <h5 class="modal-title font-bold text-lg" id="leave-modal-title">연차 신청</h5>
+                </div>
+                <div class="modal-body p-6">
+                    <form id="leave-form" class="space-y-4">
+                        <input type="hidden" id="leave-type"> <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-2">사용 형태</label>
+                            <div class="grid grid-cols-3 gap-2" id="leave-subtype-container">
+                                <input type="radio" class="btn-check" name="subtype" id="st-full" value="1.0" checked onchange="toggleTimeInputs()">
+                                <label class="btn btn-outline-light text-slate-600 border-slate-200 font-bold text-sm" for="st-full">1일 (종일)</label>
+
+                                <input type="radio" class="btn-check" name="subtype" id="st-half" value="0.5" onchange="toggleTimeInputs()">
+                                <label class="btn btn-outline-light text-slate-600 border-slate-200 font-bold text-sm" for="st-half">0.5일 (반차)</label>
+
+                                <input type="radio" class="btn-check" name="subtype" id="st-quarter" value="0.25" onchange="toggleTimeInputs()">
+                                <label class="btn btn-outline-light text-slate-600 border-slate-200 font-bold text-sm" for="st-quarter">0.25일</label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">사용 일자</label>
+                            <input type="date" id="leave-date" class="form-control font-bold text-slate-700" required>
+                        </div>
+
+                        <div id="time-select-area" class="hidden p-3 bg-slate-50 rounded-xl border border-slate-100">
+                             <label class="block text-xs font-bold text-slate-400 mb-1">상세 시간</label>
+                             <select id="leave-time-option" class="form-select text-sm font-bold text-slate-600">
+                                 </select>
+                        </div>
+
+                        <div>
+                             <label class="block text-xs font-bold text-slate-400 mb-1">신청 사유</label>
+                             <textarea id="leave-reason" class="form-control text-sm" rows="2" placeholder="업무 공유 사항 등을 입력하세요."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0 px-6 pb-6 pt-0">
+                    <button type="button" class="btn btn-light rounded-xl font-bold text-slate-500" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn bg-[#D80027] text-white rounded-xl font-bold shadow-lg shadow-red-200 hover:bg-[#B91C1C]" onclick="submitLeave()">신청하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="compRequestModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-[1.5rem] border-0 shadow-2xl">
+                <div class="modal-header border-0 pb-0 px-6 pt-6">
+                    <h5 class="modal-title font-bold text-lg text-slate-800"><i class="bi bi-clock-history text-green-600 me-2"></i>휴일 근무 등록</h5>
+                </div>
+                <div class="modal-body p-6 space-y-4">
+                    <div class="alert bg-green-50 border-green-100 text-green-800 text-xs font-bold rounded-xl mb-4">
+                        * 4시간 근무 시: 0.5일 발생<br>
+                        * 8시간 근무 시: 1.0일 발생<br>
+                        (최종 인정 일수는 결재자가 조정할 수 있습니다.)
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">근무 일자 (휴일)</label>
+                        <input type="date" id="comp-work-date" class="form-control font-bold" required>
+                    </div>
+                    <div>
+                         <label class="block text-xs font-bold text-slate-400 mb-1">근무 시간 (시간)</label>
+                         <input type="number" id="comp-work-hours" class="form-control font-bold" placeholder="예: 4 또는 8" onkeyup="calcExpectedCredit()">
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs text-slate-500">예상 발생 연차: </span>
+                        <span id="comp-expected-credit" class="font-black text-lg text-green-600">0.0</span> Day
+                    </div>
+                    <div>
+                         <label class="block text-xs font-bold text-slate-400 mb-1">근무 내용</label>
+                         <textarea id="comp-reason" class="form-control text-sm" rows="2" placeholder="수행한 업무 내용을 간략히 입력하세요."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 px-6 pb-6">
+                     <button type="button" class="btn btn-light rounded-xl font-bold text-slate-500" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn bg-[#10B981] text-white rounded-xl font-bold shadow-lg shadow-green-200 hover:bg-[#059669]" onclick="submitCompRequest()">등록 신청</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+        // --- 1. Firebase Config (사용자 프로젝트 정보로 교체 필요) ---
+const firebaseConfig = {
+  apiKey: "AIzaSyCQIoRTZfftn5imHfHzz78zhyGN74miAYE",
+  authDomain: "swsdayoff.firebaseapp.com",
+  projectId: "swsdayoff",
+  storageBucket: "swsdayoff.firebasestorage.app",
+  messagingSenderId: "1093357646858",
+  appId: "1:1093357646858:web:f334a1a2488195cbebdbf3"
+};
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+        // --- 2. Global Variables ---
+        let currentUser = null;
+        let calendarInstance = null;
+
+        // --- 3. Auth Logic ---
+        document.getElementById('btn-google-login').addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch(alert);
+        });
+
+        auth.onAuthStateChanged(async (user) => {
+            const loading = document.getElementById('loading-screen');
+            if (user) {
+                // Firestore에서 사용자 정보 조회 (Sheet 동기화된 데이터)
+                const doc = await db.collection('users').doc(user.email).get();
+                if (doc.exists) {
+                    currentUser = { email: user.email, ...doc.data() };
+                    
+                    // UI 세팅
+                    document.getElementById('user-info-name').innerText = currentUser.name;
+                    document.getElementById('user-info-team').innerText = currentUser.team;
+                    
+                    // 권한별 메뉴 처리
+                    if(currentUser.isAdmin) document.getElementById('menu-admin').classList.remove('hidden');
+                    
+                    // 화면 전환
+                    document.getElementById('login-container').classList.add('d-none');
+                    document.getElementById('app-container').classList.remove('d-none');
+                    
+                    // 초기 데이터 로드
+                    loadMyBalance();
+                    loadMyLeaves();
+                    showPage('page-my-leave');
+                } else {
+                    alert('등록된 사용자가 아닙니다. (EM 시트에 등록 필요)');
+                    auth.signOut();
+                }
+            } else {
+                document.getElementById('login-container').classList.remove('d-none');
+                document.getElementById('app-container').classList.add('d-none');
+            }
+            loading.classList.add('hidden');
+        });
+
+        // --- 4. Page Navigation ---
+        window.showPage = (pageId) => {
+            document.querySelectorAll('main > div > div[id^="page-"]').forEach(el => el.classList.add('d-none'));
+            document.getElementById(pageId).classList.remove('d-none');
+            
+            // Nav Active State
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            if(pageId === 'page-team-calendar') initCalendar();
+            if(pageId === 'page-approval') loadApprovalList();
+        };
+
+        // --- 5. Leave Application Logic ---
+        function toggleTimeInputs() {
+            const val = document.querySelector('input[name="subtype"]:checked').value;
+            const area = document.getElementById('time-select-area');
+            const select = document.getElementById('leave-time-option');
+            
+            if(val === '1.0') {
+                area.classList.add('hidden');
+            } else {
+                area.classList.remove('hidden');
+                select.innerHTML = '';
+                if(val === '0.5') {
+                    select.innerHTML = '<option value="오전">오전 반차 (09:00~13:00)</option><option value="오후">오후 반차 (14:00~18:00)</option>';
+                } else { // 0.25
+                    select.innerHTML = `
+                        <option value="지각">지각 (Late Arrival)</option>
+                        <option value="조퇴">조퇴 (Early Leave)</option>
+                        <option value="외출">외출 (During Work)</option>
+                    `;
+                }
+            }
         }
-      });
+
+        function openApplyModal(type) {
+            document.getElementById('leave-type').value = type;
+            document.getElementById('leave-modal-title').innerText = type === 'annual' ? '정기 연차 신청' : '대체 휴무 사용 신청';
+            new bootstrap.Modal(document.getElementById('leaveApplyModal')).show();
+        }
+
+        async function submitLeave() {
+            const type = document.getElementById('leave-type').value;
+            const subtypeVal = parseFloat(document.querySelector('input[name="subtype"]:checked').value);
+            const date = document.getElementById('leave-date').value;
+            const reason = document.getElementById('leave-reason').value;
+            let timeOption = null;
+            
+            if(subtypeVal < 1.0) timeOption = document.getElementById('leave-time-option').value;
+
+            if(!date) return alert('날짜를 선택해주세요.');
+
+            // 잔여 확인 로직
+            const balanceKey = type === 'annual' ? 'leaveBalance' : 'compLeaveBalance';
+            if(currentUser[balanceKey] < subtypeVal) return alert('잔여 일수가 부족합니다.');
+
+            // 결재자 설정 (기본: 팀 설정 또는 자동)
+            const approver = currentUser.approver1 || 'team_leader_email@sws.com'; // 실제 로직에선 Firestore 팀 설정 조회 필요
+
+            try {
+                await db.collection('leaves').add({
+                    requester: currentUser.email,
+                    requesterName: currentUser.name,
+                    team: currentUser.team,
+                    type: type, // annual, comp
+                    days: subtypeVal,
+                    date: date,
+                    timeOption: timeOption,
+                    reason: reason,
+                    status: 'pending',
+                    approver1: approver,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert('신청되었습니다.');
+                bootstrap.Modal.getInstance(document.getElementById('leaveApplyModal')).hide();
+                loadMyLeaves();
+            } catch(e) { console.error(e); alert('오류 발생'); }
+        }
+
+        // --- 6. Compensatory Work Request Logic ---
+        function openCompRequestModal() { new bootstrap.Modal(document.getElementById('compRequestModal')).show(); }
+
+        function calcExpectedCredit() {
+            const hours = parseFloat(document.getElementById('comp-work-hours').value) || 0;
+            let credit = 0;
+            if(hours >= 8) credit = 1.0;
+            else if(hours >= 4) credit = 0.5;
+            document.getElementById('comp-expected-credit').innerText = credit;
+        }
+
+        async function submitCompRequest() {
+            const date = document.getElementById('comp-work-date').value;
+            const hours = parseFloat(document.getElementById('comp-work-hours').value);
+            const reason = document.getElementById('comp-reason').value;
+            
+            if(!date || !hours) return alert('날짜와 시간을 입력하세요.');
+
+            let requestedCredit = 0;
+            if(hours >= 8) requestedCredit = 1.0;
+            else if(hours >= 4) requestedCredit = 0.5;
+
+            try {
+                await db.collection('comp_requests').add({
+                    requester: currentUser.email,
+                    requesterName: currentUser.name,
+                    workDate: date,
+                    workHours: hours,
+                    requestedCredit: requestedCredit,
+                    reason: reason,
+                    status: 'pending',
+                    approver1: currentUser.approver1 || 'team_leader_default',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert('휴일 근무 등록이 신청되었습니다. 결재 후 잔여 일수에 반영됩니다.');
+                bootstrap.Modal.getInstance(document.getElementById('compRequestModal')).hide();
+            } catch(e) { alert('오류'); }
+        }
+
+        // --- 7. Data Loading ---
+        function loadMyBalance() {
+            // 실시간 리스너로 잔여 연차 업데이트
+            db.collection('users').doc(currentUser.email).onSnapshot(doc => {
+                const data = doc.data();
+                currentUser = { ...currentUser, ...data }; // Update global state
+                document.getElementById('balance-annual').innerHTML = `${data.leaveBalance || 0} <span class="text-lg text-slate-400 font-medium">Day</span>`;
+                document.getElementById('balance-comp').innerHTML = `${data.compLeaveBalance || 0} <span class="text-lg text-slate-400 font-medium">Day</span>`;
+                
+                // 소멸 예정일 계산 (Admin 설정값 기반 - 예시: 내년 2월)
+                const nextYear = new Date().getFullYear() + 1;
+                document.getElementById('expiry-annual').innerText = `${nextYear}.02.28`;
+            });
+        }
+
+        async function loadMyLeaves() {
+            const list = document.getElementById('my-leave-list');
+            const snap = await db.collection('leaves')
+                .where('requester', '==', currentUser.email)
+                .orderBy('date', 'desc')
+                .limit(10)
+                .get();
+            
+            list.innerHTML = '';
+            snap.forEach(doc => {
+                const d = doc.data();
+                let badgeClass = d.days === 1 ? 'badge-annual' : (d.days === 0.5 ? 'badge-half' : 'badge-quarter');
+                if(d.type === 'comp') badgeClass = 'badge-comp';
+                
+                let statusBadge = d.status === 'approved' ? '<span class="text-green-600 font-bold">승인</span>' : (d.status === 'rejected' ? '<span class="text-red-500 font-bold">반려</span>' : '<span class="text-slate-400 font-bold">결재중</span>');
+
+                list.innerHTML += `
+                    <div class="list-group-item p-4 border-b border-slate-50 hover:bg-slate-50 transition flex justify-between items-center">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="badge ${badgeClass} border border-opacity-20 rounded px-2 py-0.5 text-[10px]">${d.days}일</span>
+                                <span class="font-bold text-slate-700">${d.date}</span>
+                                ${d.timeOption ? `<span class="text-xs text-slate-400">(${d.timeOption})</span>` : ''}
+                            </div>
+                            <p class="text-xs text-slate-400 mb-0">${d.reason || '사유 없음'}</p>
+                        </div>
+                        <div class="text-xs">${statusBadge}</div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- 8. Calendar (FullCalendar) ---
+        function initCalendar() {
+            if(calendarInstance) return calendarInstance.render();
+            
+            const calendarEl = document.getElementById('full-calendar');
+            calendarInstance = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'ko',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,listWeek'
+                },
+                height: '100%',
+                events: async function(info, successCallback, failureCallback) {
+                    // 권한 확인: 'viewAll' 권한자는 전체, 아니면 본인 팀만 쿼리
+                    let query = db.collection('leaves').where('status', '==', 'approved');
+                    if (!currentUser.viewAll && !currentUser.isAdmin) {
+                        query = query.where('team', '==', currentUser.team);
+                    }
+                    
+                    const snap = await query.get();
+                    let events = [];
+                    snap.forEach(doc => {
+                        const d = doc.data();
+                        let color = '#3B82F6'; // Blue (Annual)
+                        if(d.days === 0.5) color = '#6366F1'; // Indigo
+                        if(d.days === 0.25) color = '#A855F7'; // Purple
+                        if(d.type === 'comp') color = '#10B981'; // Green
+
+                        events.push({
+                            title: `${d.requesterName} (${d.days})`,
+                            start: d.date,
+                            backgroundColor: color,
+                            extendedProps: { ...d }
+                        });
+                    });
+                    successCallback(events);
+                },
+                eventClick: function(info) {
+                    // HR 팀이거나 관리자인 경우 취소 가능 로직 추가 가능
+                    alert(`${info.event.title}\n사유: ${info.event.extendedProps.reason}`);
+                }
+            });
+            calendarInstance.render();
+        }
+
+        // --- 9. Admin Functions ---
+        async function syncUsersFromSheet() {
+            // 실제 구현: Google Apps Script Web App을 호출하여 Sheet 데이터를 JSON으로 받아오고
+            // Firestore 'users' 컬렉션에 set/update 하는 로직 필요.
+            alert('Google Sheet와 연동된 Apps Script URL이 필요합니다.\n(현재는 데모용 알림입니다.)');
+            // 예시: fetch('GAS_WEB_APP_URL').then(res => res.json()).then(data => updateFirestore(data));
+        }
+
+        function saveAdminSettings() {
+            // Firestore 'settings' 컬렉션에 저장
+            alert('설정이 저장되었습니다.');
+        }
+
     </script>
-  </body>
+</body>
 </html>
