@@ -242,26 +242,38 @@
                         </div>
 
                         <div class="bg-white p-6 rounded-[1.5rem] shadow-sm border border-slate-100">
-                            <h5 class="font-bold text-slate-800 mb-4 text-sm flex items-center gap-2">
-                                <i class="bi bi-person-lines-fill text-slate-500"></i> 직원 정보 관리 (연차 및 결재선)
-                            </h5>
-                            
-                            <div class="flex gap-2 mb-4">
-                                <input type="text" id="admin-user-search" class="form-control text-sm" placeholder="직원 이름 검색..." onkeyup="if(window.event.keyCode==13){searchUserForApprover()}">
-                                <button class="btn btn-dark text-sm font-bold whitespace-nowrap" onclick="searchUserForApprover()">검색</button>
+                            <div class="flex justify-between items-center mb-4">
+                                <h5 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                                    <i class="bi bi-person-lines-fill text-slate-500"></i> 직원 정보 관리 (연차 및 결재선)
+                                </h5>
+                                <button class="btn btn-outline-danger btn-sm font-bold shadow-sm" onclick="saveAllVisibleUsers()">
+                                    <i class="bi bi-save-fill me-1"></i>리스트 일괄 저장
+                                </button>
                             </div>
                             
-                            <div class="overflow-x-auto">
-                                <table class="table table-hover text-sm align-middle">
-                                    <thead class="table-light">
+                            <div class="flex gap-2 mb-4 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                <input type="text" id="admin-user-search" class="form-control text-sm" placeholder="이름/팀 검색..." onkeyup="if(window.event.keyCode==13){searchUserForApprover()}">
+                                <button class="btn btn-dark text-sm font-bold whitespace-nowrap px-4" onclick="searchUserForApprover()">검색</button>
+                                <div class="w-px bg-slate-300 mx-1"></div>
+                                <button class="btn btn-secondary text-sm font-bold whitespace-nowrap px-4" onclick="viewAllUsers()">
+                                    <i class="bi bi-list-ul me-1"></i>전체 보기
+                                </button>
+                            </div>
+                            
+                            <div class="overflow-x-auto max-h-[600px] overflow-y-auto border-t border-slate-200">
+                                <table class="table table-hover text-sm align-middle table-fixed w-full">
+                                    <thead class="table-light sticky top-0 z-10 shadow-sm">
                                         <tr>
                                             <th style="width: 20%">이름 / 팀</th>
-                                            <th style="width: 25%">잔여 연차 관리</th> <th style="width: 45%">결재선 (1차/2차)</th>
-                                            <th style="width: 10%">저장</th>
+                                            <th style="width: 25%">잔여 연차 관리</th> 
+                                            <th style="width: 45%">결재선 (1차/2차)</th>
+                                            <th style="width: 10%">개별저장</th>
                                         </tr>
                                     </thead>
                                     <tbody id="admin-user-list-body">
-                                        <tr><td colspan="4" class="text-center text-slate-400 py-4">직원 이름을 검색하세요.</td></tr>
+                                        <tr><td colspan="4" class="text-center text-slate-400 py-10">
+                                            '전체 보기' 버튼을 누르거나 이름을 검색하세요.
+                                        </td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -707,28 +719,18 @@
             }
         }
 
-        // 4. [수정됨] 개별 사용자 검색 및 설정 (연차 수정 기능 포함)
-        function searchUserForApprover() {
-            const keyword = document.getElementById('admin-user-search').value.trim().toLowerCase();
+        // --- [수정됨] 공통 테이블 렌더링 함수 ---
+        function renderUserTable(userList) {
             const tbody = document.getElementById('admin-user-list-body');
-            
-            if(!keyword) return alert("검색어를 입력하세요.");
-
-            const results = allUsersCache.filter(u => 
-                (u.name && u.name.toLowerCase().includes(keyword)) || 
-                (u.email && u.email.toLowerCase().includes(keyword)) ||
-                (u.team && u.team.toLowerCase().includes(keyword))
-            );
-
-            if(results.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4">검색 결과가 없습니다.</td></tr>';
+            if(userList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4">결과가 없습니다.</td></tr>';
                 return;
             }
 
             let html = '';
-            results.forEach(u => {
+            userList.forEach(u => {
                 html += `
-                    <tr>
+                    <tr data-uid="${u.id}">
                         <td>
                             <div class="font-bold text-slate-800">${u.name}</div>
                             <div class="text-xs text-slate-500">${u.email}</div>
@@ -768,40 +770,96 @@
             tbody.innerHTML = html;
         }
 
-        // [수정됨] 저장 함수 (연차 개수 + 결재선 동시 저장)
+        // 4. [기능추가] 전체 유저 보기
+        async function viewAllUsers() {
+             if(allUsersCache.length === 0) await fetchAllUsersForSearch();
+             renderUserTable(allUsersCache);
+        }
+
+        // 5. [수정됨] 개별 사용자 검색
+        function searchUserForApprover() {
+            const keyword = document.getElementById('admin-user-search').value.trim().toLowerCase();
+            
+            if(!keyword) {
+                 // 키워드 없으면 전체 보기로 동작
+                 viewAllUsers();
+                 return;
+            }
+
+            const results = allUsersCache.filter(u => 
+                (u.name && u.name.toLowerCase().includes(keyword)) || 
+                (u.email && u.email.toLowerCase().includes(keyword)) ||
+                (u.team && u.team.toLowerCase().includes(keyword))
+            );
+            renderUserTable(results);
+        }
+
+        // 6. [수정됨] 개별 저장 함수
         async function saveApprovers(targetUid) {
-            // 1. 연차 데이터 가져오기
             const annualBal = parseFloat(document.getElementById(`bal-annual-${targetUid}`).value) || 0;
             const compBal = parseFloat(document.getElementById(`bal-comp-${targetUid}`).value) || 0;
-            
-            // 2. 결재선 데이터 가져오기
             const a1 = document.getElementById(`appr1-${targetUid}`).value.trim();
             const a2 = document.getElementById(`appr2-${targetUid}`).value.trim();
 
             if(!a1) return alert('1차 결재자는 필수입니다.');
 
-            if(!confirm('해당 직원의 정보(연차 잔여 및 결재선)를 수정하시겠습니까?')) return;
-
             try {
                 await db.collection('users').doc(targetUid).update({
-                    leaveBalance: annualBal,      // 정기 연차 업데이트
-                    compLeaveBalance: compBal,    // 대체 휴무 업데이트
+                    leaveBalance: annualBal,
+                    compLeaveBalance: compBal,
                     approver1: a1,
                     approver2: a2
                 });
                 alert('저장되었습니다.');
-                
-                // 캐시 업데이트 (검색 결과 유지를 위해)
-                const cachedUser = allUsersCache.find(u => u.id === targetUid);
-                if(cachedUser) { 
-                    cachedUser.leaveBalance = annualBal;
-                    cachedUser.compLeaveBalance = compBal;
-                    cachedUser.approver1 = a1; 
-                    cachedUser.approver2 = a2; 
-                }
-            } catch(e) { 
+                updateCache(targetUid, annualBal, compBal, a1, a2);
+            } catch(e) { console.error(e); alert("저장 실패: " + e.message); }
+        }
+
+        // 7. [기능추가] 리스트 일괄 저장 (Batch Update)
+        async function saveAllVisibleUsers() {
+            const rows = document.querySelectorAll('#admin-user-list-body tr[data-uid]');
+            if(rows.length === 0) return alert('저장할 대상이 없습니다.');
+            
+            if(!confirm(`현재 화면에 표시된 ${rows.length}명의 정보를 모두 저장하시겠습니까?`)) return;
+
+            const batch = db.batch();
+            let updateCount = 0;
+
+            rows.forEach(row => {
+                const uid = row.getAttribute('data-uid');
+                const annualBal = parseFloat(document.getElementById(`bal-annual-${uid}`).value) || 0;
+                const compBal = parseFloat(document.getElementById(`bal-comp-${uid}`).value) || 0;
+                const a1 = document.getElementById(`appr1-${uid}`).value.trim();
+                const a2 = document.getElementById(`appr2-${uid}`).value.trim();
+
+                const ref = db.collection('users').doc(uid);
+                batch.update(ref, {
+                    leaveBalance: annualBal,
+                    compLeaveBalance: compBal,
+                    approver1: a1,
+                    approver2: a2
+                });
+                // 캐시도 미리 업데이트 (성공 가정)
+                updateCache(uid, annualBal, compBal, a1, a2);
+                updateCount++;
+            });
+
+            try {
+                await batch.commit();
+                alert('일괄 저장이 완료되었습니다.');
+            } catch(e) {
                 console.error(e);
-                alert("저장 실패: " + e.message); 
+                alert('일괄 저장 중 오류가 발생했습니다. (일부는 저장되지 않았을 수 있습니다.)');
+            }
+        }
+
+        function updateCache(id, ann, comp, a1, a2) {
+            const cachedUser = allUsersCache.find(u => u.id === id);
+            if(cachedUser) { 
+                cachedUser.leaveBalance = ann;
+                cachedUser.compLeaveBalance = comp;
+                cachedUser.approver1 = a1; 
+                cachedUser.approver2 = a2; 
             }
         }
 
